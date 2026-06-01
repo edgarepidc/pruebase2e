@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { getAppUrl } from "@/lib/env";
+import { getPasswordRecoveryRedirectTo } from "@/lib/auth/redirect-to";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -23,15 +23,24 @@ export default async function OlvidoContrasenaPage({ searchParams }: PageProps) 
     }
 
     const supabase = await createClient();
-    const app = getAppUrl();
-    const redirectTo = `${app.value}/auth/callback?next=${encodeURIComponent("/login/restablecer")}`;
+    let redirectTo: string;
+    try {
+      redirectTo = getPasswordRecoveryRedirectTo();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "URL de la app mal configurada.";
+      redirect(`/login/olvido?error=${encodeURIComponent(msg)}`);
+    }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
     });
 
     if (error) {
-      redirect(`/login/olvido?error=${encodeURIComponent(error.message)}`);
+      const lower = error.message.toLowerCase();
+      const friendly = lower.includes("requested path is invalid")
+        ? "Supabase rechazó la URL de retorno. En Authentication → URL Configuration agrega https://pruebase2e.vercel.app/login/restablecer y https://pruebase2e.vercel.app/** (Site URL = https://pruebase2e.vercel.app). Luego redeploy."
+        : error.message;
+      redirect(`/login/olvido?error=${encodeURIComponent(friendly)}`);
     }
 
     redirect(

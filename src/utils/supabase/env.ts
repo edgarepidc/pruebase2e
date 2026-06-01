@@ -13,12 +13,16 @@
  * como {"error":"requested path is invalid"}.
  */
 function normalizeHostedSupabaseProjectUrl(raw: string): string {
+  const trimmed = raw.trim().replace(/\/+$/, "");
   try {
-    const u = new URL(raw.trim());
-    if (!/\.supabase\.co$/i.test(u.hostname)) return raw.trim();
+    const u = new URL(trimmed);
+    if (!/\.supabase\.co$/i.test(u.hostname)) return trimmed;
     return u.origin;
   } catch {
-    return raw.trim();
+    return trimmed
+      .replace(/\/auth\/v1\/?$/i, "")
+      .replace(/\/rest\/v1\/?$/i, "")
+      .replace(/\/+$/, "");
   }
 }
 
