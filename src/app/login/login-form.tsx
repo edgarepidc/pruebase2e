@@ -1,17 +1,38 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { supabaseAuthCookieOptions } from "@/utils/supabase/cookie-options";
 
+function friendlyAuthError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) {
+    return (
+      "Email o contraseña incorrectos. Si creaste el usuario en Supabase: usa «Create new user», " +
+      "define contraseña y activa «Auto Confirm User». O recupera contraseña abajo."
+    );
+  }
+  if (m.includes("email not confirmed")) {
+    return "El correo no está confirmado. En Supabase marca «Auto Confirm» al crear el usuario o usa recuperar contraseña.";
+  }
+  return message;
+}
+
 type Props = {
   supabaseUrl: string | null;
   supabaseKey: string | null;
+  initialMessage?: string;
 };
 
-export function LoginForm({ supabaseUrl, supabaseKey }: Props) {
+export function LoginForm({
+  supabaseUrl,
+  supabaseKey,
+  initialMessage,
+}: Props) {
   const [error, setError] = useState("");
+  const [message, setMessage] = useState(initialMessage ?? "");
   const [pending, setPending] = useState(false);
 
   const envOk = !!(supabaseUrl && supabaseKey);
@@ -34,11 +55,13 @@ export function LoginForm({ supabaseUrl, supabaseKey }: Props) {
       email,
       password,
     });
-    setPending(false);
     if (err) {
-      setError(err.message);
+      setPending(false);
+      setError(friendlyAuthError(err.message));
       return;
     }
+    await supabase.auth.getSession();
+    setPending(false);
     window.location.assign("/dashboard");
   }
 
@@ -87,7 +110,16 @@ export function LoginForm({ supabaseUrl, supabaseKey }: Props) {
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
             />
           </div>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {message ? (
+            <p className="rounded-md border border-emerald-200 bg-emerald-50 p-2 text-sm text-emerald-800">
+              {message}
+            </p>
+          ) : null}
+          {error ? (
+            <p className="rounded-md border border-rose-200 bg-rose-50 p-2 text-sm text-rose-700">
+              {error}
+            </p>
+          ) : null}
           <button
             type="submit"
             disabled={!envOk || pending}
@@ -96,6 +128,11 @@ export function LoginForm({ supabaseUrl, supabaseKey }: Props) {
             {pending ? "Entrando…" : "Entrar al tablero"}
           </button>
         </form>
+        <p className="mt-4 text-center text-sm">
+          <Link href="/login/olvido" className="text-indigo-600 hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </p>
       </div>
     </main>
   );
