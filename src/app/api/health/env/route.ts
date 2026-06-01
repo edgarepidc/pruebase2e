@@ -26,8 +26,13 @@ export async function GET() {
     }
   }
 
+  const supabaseRef = supabaseUrl
+    ? new URL(supabaseUrl).hostname.split(".")[0]
+    : null;
+
   return NextResponse.json({
     hasSupabasePublicEnv: hasSupabasePublicEnv(),
+    supabaseProjectRef: supabaseRef,
     supabaseUrlHost: supabaseUrl ? new URL(supabaseUrl).host : null,
     supabaseUrlOk,
     hasPublishableKey: Boolean(getSupabasePublicKey()),

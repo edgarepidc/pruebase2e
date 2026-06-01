@@ -10,7 +10,8 @@
     "lint": "eslint",
     "prisma:generate": "prisma generate",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "node prisma/seed.mjs"
+    "prisma:seed": "node prisma/seed.mjs",
+    "vercel:sync-env": "node scripts/sync-vercel-env.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",

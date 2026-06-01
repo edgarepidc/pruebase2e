@@ -23,12 +23,14 @@ function friendlyAuthError(message: string): string {
 type Props = {
   supabaseUrl: string | null;
   supabaseKey: string | null;
+  supabaseProjectRef?: string | null;
   initialMessage?: string;
 };
 
 export function LoginForm({
   supabaseUrl,
   supabaseKey,
+  supabaseProjectRef,
   initialMessage,
 }: Props) {
   const [error, setError] = useState("");
@@ -72,6 +74,15 @@ export function LoginForm({
         <p className="mt-2 text-sm text-zinc-600">
           Inicia sesión para editar el tablero. La vista pública no requiere cuenta.
         </p>
+
+        {supabaseProjectRef ? (
+          <p className="mt-2 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1.5 font-mono text-xs text-zinc-600">
+            Proyecto Auth: <strong>{supabaseProjectRef}</strong>
+            <span className="mt-0.5 block font-sans font-normal text-zinc-500">
+              Debe coincidir con Settings → General → Reference ID en tu panel Supabase.
+            </span>
+          </p>
+        ) : null}
 
         {!envOk ? (
           <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
