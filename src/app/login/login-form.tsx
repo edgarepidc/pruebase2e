@@ -128,11 +128,18 @@ export function LoginForm({
             {pending ? "Entrando…" : "Entrar al tablero"}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm">
-          <Link href="/login/olvido" className="text-indigo-600 hover:underline">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </p>
+        <div className="mt-4 space-y-2 text-center text-sm">
+          <p>
+            <Link href="/login/olvido" className="text-indigo-600 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
+          <p>
+            <Link href="/logout" className="text-zinc-600 hover:underline">
+              Cerrar sesión anterior
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );

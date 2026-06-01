@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { SignOutButton } from "@/components/SignOutButton";
 import { TableroE2E } from "@/components/e2e/TableroE2E";
 import { getAppSession } from "@/lib/auth/session";
 import { getAppUrl } from "@/lib/env";
@@ -35,7 +36,10 @@ export default async function DashboardPage() {
             <h1 className="text-xl font-bold text-zinc-900">Tablero E2E QA</h1>
             <p className="text-sm text-zinc-600">{tenant.name}</p>
           </div>
-          <p className="text-xs text-zinc-500">{session.email}</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs text-zinc-500">{session.email}</p>
+            <SignOutButton />
+          </div>
         </header>
 
         {tasks.length === 0 ? (
